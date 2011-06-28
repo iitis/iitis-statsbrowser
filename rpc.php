@@ -209,8 +209,13 @@ function res($result)
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 	$req = json_decode($HTTP_RAW_POST_DATA, true);
-	$method = $req["method"];
-	$params = $req["params"];
+	if ($req !== NULL) {
+		$method = $req["method"];
+		$params = $req["params"];
+	} else {
+		$method = $_POST["method"];
+		$params = $_POST["params"];
+	}
 } else {
 	$method = $_GET["q"];
 	$params = $_GET;
