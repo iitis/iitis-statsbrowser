@@ -1,0 +1,11 @@
+* saving tree/script/tree+script state
+* tree context menu
+  * directories: get zip, rename, remove
+  * stat files: get txt
+* make the tree more clear and easier to navigate somehow?
+* auto redraw
+* auto script update + redraw
+* easier access to png/pdf outputs
+* dont touch users corrections to the script somehow?
+  * divide script into two parts - 1) sets, ranges, etc. 2) the plot command
+* update to gnuplot 4.5 and try once again with the mousing functionality
