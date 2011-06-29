@@ -10,8 +10,10 @@ init: function()
 	/* create initial tree with statistics dirs and files */
 	$("#tree")
 		.jstree({
-			plugins: [ "json_data", "checkbox", "ui", "themes" ],
-			core: { animation: 0 },
+			plugins: [ "json_data", "checkbox", "ui", "themes", "contextmenu", "crrm" ],
+			core: {
+				animation: 0
+			},
 			json_data: {
 				data: {
 					data: "/",
@@ -19,10 +21,16 @@ init: function()
 					metadata: { path: "/" }
 				}
 			},
-			ui: { initially_select: "root_node" }
+			ui: {
+				initially_select: "root_node"
+			},
+			contextmenu: {
+				items: T.ctxmenu
+			}
 		})
 		.bind("select_node.jstree", T.node_selected)
-		.bind("open_node.jstree", T.node_load);
+		.bind("open_node.jstree", T.node_load)
+		.bind("rename.jstree", T.rename);
 },
 
 node_selected: function(ev, data)
@@ -100,5 +108,91 @@ node_load: function(ev, data, toggle)
 get_selected: function()
 {
 	return $("#tree .jstree-checked.jstree-leaf");
+},
+
+ctxmenu: function($node)
+{
+	/* no menu for columns */
+	if ($node.data("iscolumn"))
+		return undefined;
+
+	/* common options */
+	var out = {
+		title:  { label: $node.data("name"), _disabled: true, separator_after: true },
+		rename: { label: "Rename", action: function($n) { this.rename($n); } },
+		delete: { label: "Delete", action: T.delete, separator_after: true }
+	};
+
+	if (!$node.data("isdir")) {
+		out.txt = { label: "Get as TXT", action: T.txt };
+	} else if ($node.data("isdir")) {
+		out.zip = { label: "Get as ZIP", action: T.zip };
+	}
+
+	return out;
+},
+
+txt: function($node)
+{
+	window.open("rpc.php?" + $.param({
+		q:    "file_txt",
+		path: $node.data("path")
+	}));
+},
+
+zip: function($node)
+{
+	window.open("rpc.php?" + $.param({
+		q:    "path_zip",
+		path: $node.data("path")
+	}));
+},
+
+delete: function($node)
+{
+	if (!confirm("Are you sure?"))
+		return;
+
+	$.rpc("remove", { path: $node.data("path") }, function (r)
+	{
+		if (r.status) {
+			$("#tree").jstree("delete_node", $node);
+		} else {
+			alert("Deletion failed");
+		}
+	});
+},
+
+rename: function(ev, data)
+{
+	if (data.rslt.old_name == data.rslt.new_name)
+		return;
+
+	var $node = data.rslt.obj;
+	var tree = this;
+
+	var path    = $node.data("path");
+	var newpath = path.replace(/\/[^\/]+$/, "/" + data.rslt.new_name);
+	$.rpc("rename", { path: path, newpath: newpath }, function(r)
+	{
+		if (r.status) {
+			$node.data("name", data.rslt.new_name);
+			$node.data("path", newpath);
+
+			$("#tree").jstree("uncheck_node", $node);
+
+			/* delete children */
+			$node.find("li").each(function(k, v)
+			{
+				$("#tree").jstree("delete_node", v);
+			});
+
+			/* reload */
+			$node.data("loaded", false);
+			T.node_load(ev, data, false);
+		} else {
+			alert("Rename failed");
+		}
+	});
 }
 };

@@ -2,6 +2,39 @@
 
 require "config.php";
 
+function zipdir($zip, $root, $dir)
+{
+	foreach (scandir("$root/$dir") as $name) {
+		if ($name[0] == '.')
+			continue;
+
+		$dir2 = "$dir/$name";
+		if (is_dir("$root/$dir2"))
+			zipdir($zip, $root, $dir2);
+		else
+			$zip->addFile("$root/$dir2", $dir2);
+	}
+}
+
+function rmfr($path)
+{
+	if (is_dir($path)) {
+		foreach (scandir($path) as $name) {
+			if ($name == "." || $name == "..")
+				continue;
+
+			if (is_dir("$path/$name"))
+				rmfr("$path/$name");
+			else
+				unlink("$path/$name");
+		}
+
+		return rmdir($path);
+	} else {
+		return unlink($path);
+	}
+}
+
 /*** RPC functions ***/
 
 /** List all files under given path
@@ -84,14 +117,7 @@ function rpc_path_zip($p)
 	if ($zip->open($filename, ZIPARCHIVE::CREATE) !== true)
 		die("cant open file for zip: $filename");
 
-	$dir = CFG_STATSDIR . "/$path";
-	foreach (scandir($dir) as $name) {
-		if ($name[0] == '.')
-			continue;
-
-		$zip->addFile("$dir/$name", "$path/$name");
-	}
-
+	zipdir($zip, CFG_STATSDIR, $path);
 	$zip->close();
 
 	/* send it to the browser */
@@ -188,6 +214,43 @@ function rpc_gnuplot($p)
 		echo $errors;
 		exit;
 	}
+}
+
+/** Rename path
+ * @param path         path under CFG_STATSDIR
+ * @param newpath      new path
+ * @return             object with
+ *   bool status       true if success
+ */
+function rpc_rename($p)
+{
+	$path = str_replace("..", "", $p["path"]);
+	if ($path[0] == '.') $path = substr($path, 1);
+	if ($path[0] == '/') $path = substr($path, 1);
+
+	$newpath = str_replace("..", "", $p["newpath"]);
+	if ($newpath[0] == '.') $newpath = substr($newpath, 1);
+	if ($newpath[0] == '/') $newpath = substr($newpath, 1);
+
+	return res(array(
+		"status" => rename(CFG_STATSDIR . "/$path", CFG_STATSDIR . "/$newpath")
+	));
+}
+
+/** Recursively deletes path
+ * @param path        path
+ * @return            object:
+ *   bool status      true if success
+ */
+function rpc_remove($p)
+{
+	$path = str_replace("..", "", $p["path"]);
+	if ($path[0] == '.') $path = substr($path, 1);
+	if ($path[0] == '/') $path = substr($path, 1);
+
+	return res(array(
+		"status" => rmfr(CFG_STATSDIR . "/$path")
+	));
 }
 
 /*********************/
