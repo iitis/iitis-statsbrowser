@@ -25,6 +25,7 @@ body {
 }
 	#tree li.jstree-leaf a ins.jstree-icon { background-position: -35px -54px; }
 	#tree li a.isstats ins.jstree-icon { background-position: -76px -19px; }
+	#tree li { padding-top: 3px; padding-bottom: 3px; }
 
 #rpane {
 	position: absolute;
