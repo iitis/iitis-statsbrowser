@@ -78,7 +78,7 @@ node_load: function(ev, data, toggle)
 					title: v.name,
 					attr: { class: v.isstats ? "isstats" : "" }
 				},
-				state: "closed",
+				state: (v.isdir || v.isstats) ? "closed" : undefined,
 				metadata: v
 			}, v.isstats ? function($obj)
 			{

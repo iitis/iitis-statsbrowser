@@ -28,6 +28,9 @@ update: function()
 	{
 		var d = $(this).data();
 
+		if (!d.iscolumn)
+			return;
+
 		if (count++)
 			text += ",\\\n     ";
 		else
