@@ -37,11 +37,13 @@ node_selected: function(ev, data)
 {
 	var $node = data.rslt.obj;
 
-	if ($node.data("iscolumn") == true) {
+	if ($node.data("iscolumn")) {
 		if ($("#tree").jstree("is_checked", $node))
 			$("#tree").jstree("uncheck_node", $node);
 		else
 			$("#tree").jstree("check_node", $node);
+	} else if ($node.data("isfile")) {
+		T.txt($node);
 	} else {
 		T.node_load(ev, data, true);
 	}
@@ -64,13 +66,13 @@ node_load: function(ev, data, toggle)
 	}
 
 	$.rpc("path_ls", { path: $node.data("path") }, function(d) {
-		/* mark node as loaded */
+		/* check once again - it might have been loaded in the meantime */
 		if ($node.data("loaded") == true)
 			return;
-		else
+		else /* mark node as loaded */
 			$node.data("loaded", true);
 
-		/* append children */
+		/* append each children */
 		$.each(d, function(k, v)
 		{
 			$("#tree").jstree("create_node", $node, "last", {

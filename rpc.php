@@ -68,10 +68,7 @@ function rpc_path_ls($p)
 
 		if (is_dir("$dir/$name")) {
 			$info["isdir"] = true;
-			$info["isstats"] = false;
 		} else {
-			$info["isdir"] = false;
-
 			/* a file - read its first line */
 			$fh = fopen("$dir/$name", "r");
 			if ($fh) {
@@ -87,7 +84,7 @@ function rpc_path_ls($p)
 				$info["columns"] = explode(' ', substr($line, 1, -1));
 			} else {
 				/* ordinary file */
-				$info["isstats"] = false;
+				$info["isfile"] = true;
 			}
 		}
 
