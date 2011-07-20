@@ -19,7 +19,7 @@ body {
 #lpane {
 	position: absolute;
 	left: 0; top: 0; bottom: 0;
-	width: 15%;
+	width: 20%;
 	/*border-right: 1px solid gray;*/
 	overflow: auto;
 }
@@ -30,7 +30,7 @@ body {
 #rpane {
 	position: absolute;
 	top: 0; bottom: 0; right: 0;
-	width: 85%;
+	width: 80%;
 }
 	#rpane-top {
 		position: absolute;
