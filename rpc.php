@@ -151,8 +151,18 @@ function rpc_file_txt($p)
 	if (is_dir($file))
 		die("given path is a directory\n");
 
+	/* select mime content type basing on file extension */
+	$pi = pathinfo($file);
+	switch ($pi["extension"]) {
+		case "txt":
+		case "conf":
+			header('Content-Type: text/plain');
+			break;
+		default:
+			break;
+	}
+
 	/* send it to the browser */
-	header('Content-Type: text/plain');
 	header('Expires: 0');
 	header('Cache-Control: must-revalidate, post-check=0, pre-check=0');
 	header('Pragma: public');
