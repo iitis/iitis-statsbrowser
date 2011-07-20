@@ -21,6 +21,7 @@ update: function()
 {
 	var text;
 	var count = 0;
+	var title;
 
 	text  = "set grid\n";
 
@@ -36,8 +37,12 @@ update: function()
 		else
 			text += "plot ";
 
+		title = d.file
+			.replace(/^[^\/]+\//, "")
+			.replace(/.txt$/, "");
+
 		text += "\"" + d.file + "\" using 1:" + d.index
-		      + " title '" + d.file.replace(/.txt$/, " ") + d.title + "'";
+		      + " title '" + title + " " + d.title + "'";
 	});
 
 	$("#script").val(text);
