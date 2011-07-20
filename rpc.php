@@ -123,7 +123,7 @@ function rpc_path_zip($p)
 	/* send it to the browser */
 	header('Content-Description: File Transfer');
 	header('Content-Type: application/octet-stream');
-	header('Content-Disposition: attachment; filename=' . str_replace("/", "_", $path) . '.zip');
+	header('Content-Disposition: attachment; filename="' . str_replace("/", "_", $path) . '.zip"');
 	header('Content-Transfer-Encoding: binary');
 	header('Expires: 0');
 	header('Cache-Control: must-revalidate, post-check=0, pre-check=0');
