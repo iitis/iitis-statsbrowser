@@ -90,7 +90,7 @@ node_load: function(ev, data, toggle)
 						return;
 
 					$("#tree").jstree("create_node", $obj, "last", {
-						data: v2,
+						data: v2 + " (" + (k2+1) + ")",
 						metadata: {
 							iscolumn: true,
 							file: v.path,
