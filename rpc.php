@@ -157,8 +157,15 @@ function rpc_file_txt($p)
 		case "txt":
 		case "conf":
 			header('Content-Type: text/plain');
+			header('Content-Disposition: inline');
+			break;
+		case "pcap":
+			header('Content-Type: application/vnd.tcpdump.pcap');
+			header('Content-Disposition: attachment; filename="' . str_replace("/", "_", $path));
 			break;
 		default:
+			header('Content-Type: application/octet-stream');
+			header('Content-Disposition: attachment; filename="' . str_replace("/", "_", $path));
 			break;
 	}
 
